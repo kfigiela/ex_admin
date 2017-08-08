@@ -268,10 +268,8 @@ defmodule ExAdmin.Utils do
         |> Keyword.put(:"data-remote", "true")
       _ -> opts
     end
-    |> Enum.reduce("", fn({k,v}, acc) -> acc <> "#{k}='#{v}' " end)
 
-    "<a href='#{path}' #{attributes}>#{name}</a>"
-    |> Phoenix.HTML.raw
+    Phoenix.HTML.Tag.content_tag(:a, name, [{:href, path} | attributes])
   end
 
 

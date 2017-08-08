@@ -43,11 +43,11 @@ defmodule ExAdmin.Helpers do
     end
   end
 
-  def build_link_for({:safe, _} = safe_contents, d, a, b, c) do
-    safe_contents
-    |> Phoenix.HTML.safe_to_string()
-    |> build_link_for(d, a, b, c)
-  end
+  # def build_link_for({:safe, _} = safe_contents, conn, opts, resource, field_name) do
+  #   safe_contents
+  #   |> Phoenix.HTML.safe_to_string()
+  #   |> build_link_for(conn, opts, resource, field_name)
+  # end
   def build_link_for("", _, _, _, _), do: ""
   def build_link_for(nil, _, _, _, _), do: ""
   def build_link_for(contents, _, %{link: false}, _, _), do: contents
@@ -65,6 +65,7 @@ defmodule ExAdmin.Helpers do
   defp build_content_link(link?, conn, resource, contents) do
     if link? && ExAdmin.Utils.authorized_action?(conn, :show, resource) do
       path = admin_resource_path resource, :show
+      # TODO: Phoenix.HTML.Tag.content_tag / Phoenix.HTML.Tag.link czy jakos tak
       "<a href='#{path}'>#{contents}</a>"
     else
       contents
@@ -134,7 +135,7 @@ defmodule ExAdmin.Helpers do
     end
   end
 
-  def build_single_field(resource, conn, {_, f_name}, opts) do
+  def build_single_field(resource, conn, {_type, f_name}, opts) do
     build_single_field(resource, conn, f_name, opts)
   end
   def build_single_field(resource, conn, f_name, %{fun: fun, image: true} = opts) do
@@ -142,8 +143,10 @@ defmodule ExAdmin.Helpers do
       |> Map.delete(:fun)
       |> Map.delete(:image)
       |> build_attributes
+
     "<img src='#{fun.(resource)}'#{attributes} />"
     |> build_link_for(conn, opts, resource, f_name)
+    # TODO: Phoenix.HTML.Tag.tag
   end
   def build_single_field(resource, conn, f_name, %{toggle: true}) do
     build_single_field(resource, conn, f_name, %{toggle: ~w(YES NO)})
@@ -162,12 +165,14 @@ defmodule ExAdmin.Helpers do
     ~s(<a id="#{f_name}_true_#{resource.id}" class="toggle btn btn-sm #{yes_btn_css}" href="#{path.(true)}" data-remote="true" data-method="put" #{if !!current_value, do: "disabled"}>#{yes}</a>),
     ~s(<a id="#{f_name}_false_#{resource.id}" class="toggle btn btn-sm #{no_btn_css}" href="#{path.(false)}" data-remote="true" data-method="put" #{if !current_value, do: "disabled"}>#{no}</a>)
     ] |> Enum.join
+    # TODO: Phoenix.HTML.Tag.content_tag / Phoenix.HTML.Tag.link czy jakos tak
+    # TODO: safe_join
   end
   def build_single_field(resource, conn, f_name, %{fun: fun} = opts) do
     markup :nested do
       case fun.(resource) do
-        [{_, list}] -> list
-        other -> other
+        [{_, list}] -> Phoenix.HTML.html_escape(list)
+        other -> Phoenix.HTML.html_escape(other)
       end
     end
     |> build_link_for(conn, opts, resource, f_name)
@@ -398,6 +403,7 @@ defmodule ExAdmin.Helpers do
   def build_attributes(%{} = opts) do
     build_attributes Map.to_list(opts)
   end
+  # TODO
   def build_attributes(opts) do
     Enum.reduce opts, "", fn({k,v}, acc) ->
       acc <> " #{k}='#{v}'"

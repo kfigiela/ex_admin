@@ -34,7 +34,7 @@ defmodule ExAdmin.Paginate do
   end
 
   def pagination_information(name, record_number, record_number, record_count) do
-    markup do
+    markup safe: true do
       text (gettext "Displaying") <> Inflex.singularize(" #{name}") <> " "
       b "#{record_number}"
       text " " <> (gettext "of") <> " "
@@ -44,7 +44,7 @@ defmodule ExAdmin.Paginate do
   end
 
   def pagination_information(name, record_number, last, record_count) do
-    markup do
+    markup safe: true do
       text (gettext "Displaying %{name}", name: name) <> " "
       b "#{record_number}&nbsp;-&nbsp;#{last}"
       text " " <> (gettext "of") <> " "
@@ -54,7 +54,7 @@ defmodule ExAdmin.Paginate do
   end
 
   def pagination_information(name, total) do
-    markup do
+    markup safe: true do
       text gettext "Displaying" <> " "
       b (gettext "all %{total}", total: total)
       text " #{name}"

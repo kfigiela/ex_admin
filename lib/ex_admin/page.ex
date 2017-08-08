@@ -83,7 +83,7 @@ defmodule ExAdmin.Page do
   """
   defmacro column([do: block]) do
     quote do
-      html = markup do
+      html = markup safe: true do
         unquote(block)
       end
       var!(columns, ExAdmin.Page) = [html | var!(columns, ExAdmin.Page)]

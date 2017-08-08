@@ -95,6 +95,7 @@ defmodule ExAdmin.Theme.AdminLte2.Layout do
         end
         div body_attributes do
           case apply mod, fun, [conn, resource] do
+            {:safe, _} = data -> data
             {_, rest} -> text rest
             :ok       -> ""
             other     -> text other

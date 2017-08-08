@@ -680,7 +680,7 @@ defmodule ExAdmin.Form do
       end
       {_, onclick} = Phoenix.HTML.html_escape theme_module(conn, Form).has_many_insert_item(
         contents, new_record_name_var)
-      markup do
+      markup safe: true do
         html
         theme_module(conn, Form).theme_button("Add New #{human_label}", href: "#", onclick: onclick, type: ".btn-primary")
       end
@@ -717,7 +717,7 @@ defmodule ExAdmin.Form do
     {html, _id} = wrap_item(resource, field_name, model_name, label, errors, item[:opts],
                                               conn.params, required, fn(ext_name) ->
       item = update_in item[:opts], &(Map.delete(&1, :change) |> Map.delete(:ajax))
-      markup do
+      markup safe: true do
         if binary_tuple do
           build_select_binary_tuple_list(collection, item, field_name, resource, model_name, ext_name)
         else
@@ -827,7 +827,7 @@ defmodule ExAdmin.Form do
             {new_inx, html} = build_has_many_fieldset(conn, res, fields, inx,
               ext_name, field_name, field_field_name, model_name, errors)
             res_id = ExAdmin.Schema.get_id(res)
-            markup do
+            markup safe: true do
               html
               Xain.input [id: "#{ext_name}_id",
                 name: "#{model_name}[#{field_field_name}][#{new_inx}][id]",
@@ -865,7 +865,7 @@ defmodule ExAdmin.Form do
     name_str = "#{model_name}[#{name_ids}][]"
     required = get_required name, opts
     theme_module(conn, Form).build_inputs_collection model_name, name, name_ids, required, fn ->
-      markup do
+      markup safe: true do
         Xain.input name: name_str, type: "hidden", value: ""
         if opts[:as] == :check_boxes do
           build_checkboxes(conn, name, collection, opts, resource, model_name, errors, name_ids)
@@ -969,7 +969,7 @@ defmodule ExAdmin.Form do
     name = "#{model_name}[#{field_name}]#{inx}[#{field}]"
     label = humanize field
     theme_module(conn, Form).build_map(id, label, index, error, fn class ->
-      markup do
+      markup safe: true do
         []
         |> Keyword.put(:type, input_type(type))
         |> Keyword.put(:class, class)
@@ -1001,7 +1001,7 @@ defmodule ExAdmin.Form do
     |> Map.put_new(:id, ext_name)
     |> Map.to_list
 
-    markup do
+    markup safe: true do
       Xain.input(type: :hidden, value: "false", name: "#{model_name}[#{field_name}]")
       Xain.input(opts)
     end
@@ -1148,7 +1148,7 @@ defmodule ExAdmin.Form do
 
     builder =
       Keyword.get(opts, :builder) || fn b ->
-        markup do
+        markup safe: true do
           date_builder(b, opts)
           span ".date-time-separator"
           time_builder(b, opts)
@@ -1165,7 +1165,7 @@ defmodule ExAdmin.Form do
   end
 
   defp date_builder(b, _opts) do
-    markup do
+    markup safe: true do
       b.(:year, [])
       span(".date-separator")
       b.(:month, [])
@@ -1196,20 +1196,20 @@ defmodule ExAdmin.Form do
   end
 
   defp time_builder(b, opts) do
-    markup do
+    markup safe: true do
       b.(:hour, [])
       span ".time-separator"
       b.(:min, [])
 
       if Keyword.get(opts, :sec) do
-        markup do
+        markup safe: true do
           span ".time-separator"
           b.(:sec, [])
         end
       end
 
       if Keyword.get(opts, :usec) do
-        markup do
+        markup safe: true do
           span ".time-separator"
           b.(:usec, [])
         end

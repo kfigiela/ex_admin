@@ -78,7 +78,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
     div ".form-group##{ext_name}_input", hidden do
       if ajax do
         if hidden == [] do
-          markup do
+          markup safe: true do
             label(".col-sm-2.control-label", for: ext_name) do
               text humanize(label)
               required_abbr(required)
@@ -144,8 +144,10 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
   def form_box(item, _opts, fun) do
     {html, changes} = Enum.reduce(fun.(), {"", []}, fn(item, {htmls, chgs}) ->
       case item do
-        bin when is_binary(bin) -> {htmls <> bin, chgs}
-        {bin, change} -> {htmls <> bin, [change | chgs]}
+        {:safe, bin} ->
+          {[htmls, bin], chgs}
+        {{:safe, bin}, change} ->
+          {[htmls, bin], [change | chgs]}
       end
     end)
     changes = Enum.reverse changes

@@ -38,7 +38,9 @@ defmodule ExAdmin.Table do
                     tr do
                       value = ExAdmin.Render.to_string(v)
                       field_header "#{f_name} #{k}"
-                      td ".td-#{parameterize k} #{value}"
+                      td ".td-#{parameterize k}" do
+                        value
+                      end
                     end
                   end
                 contents, f_name ->
@@ -71,10 +73,14 @@ defmodule ExAdmin.Table do
       for field <- columns do
         case field do
           {f_name, fun} when is_function(fun) ->
-            td ".td-#{parameterize f_name} #{fun.(resource)}"
+            td ".td-#{parameterize f_name}" do
+              fun.(resource)
+            end
           {f_name, opts} ->
             build_field(resource, conn, {f_name, Enum.into(opts, %{})}, fn(contents, f_name) ->
-              td ".td-#{parameterize f_name} #{contents}"
+              td ".td-#{parameterize f_name}" do
+                contents
+              end
             end)
         end
       end
@@ -86,10 +92,14 @@ defmodule ExAdmin.Table do
       for field <- columns do
         case field do
           {f_name, fun} when is_function(fun) ->
-            td ".td-#{parameterize f_name} #{fun.(resource)}"
+            td ".td-#{parameterize f_name}" do
+              fun.(resource)
+            end
           {f_name, opts} ->
             build_field(resource, conn, {f_name, Enum.into(opts, %{})}, fn(contents, f_name) ->
-              td ".td-#{parameterize f_name} #{contents}"
+              td ".td-#{parameterize f_name}" do
+                contents
+              end
             end)
         end
       end
@@ -97,7 +107,7 @@ defmodule ExAdmin.Table do
   end
 
   def do_panel(conn, columns \\ [], table_opts \\ [], output \\ [])
-  def do_panel(_conn, [], _table_opts, output), do: Enum.join(Enum.reverse(output))
+  def do_panel(_conn, [], _table_opts, output), do: Enum.reduce(Enum.reverse(output), &Xain.merge_content/2)
   def do_panel(conn, [{:table_for, %{resources: resources, columns: columns, opts: opts}} | tail], table_opts, output) do
     output = [table(Keyword.merge(table_opts, opts)) do
       table_head(columns)
@@ -112,12 +122,7 @@ defmodule ExAdmin.Table do
     do_panel(conn, tail, table_opts, output)
   end
   def do_panel(conn, [{:contents, %{contents: content}} | tail], table_opts, output) do
-    output = [
-      case content do
-        {:safe, _} -> Phoenix.HTML.safe_to_string(content)
-        content -> content
-      end
-      |> Xain.raw | output]
+    output = [content | output]
     do_panel(conn, tail, table_opts, output)
   end
   # skip unknown blocks
@@ -212,10 +217,9 @@ defmodule ExAdmin.Table do
       text contents
     end
   end
-  def handle_contents({:safe, contents}, field_name) do
-    handle_contents contents, field_name
-  end
   def handle_contents(contents, field_name) do
-    td(to_class(".td-", field_name), contents)
+    td to_class(".td-", field_name) do
+      contents
+    end
   end
 end

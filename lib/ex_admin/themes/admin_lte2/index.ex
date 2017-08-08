@@ -43,7 +43,7 @@ defmodule ExAdmin.Theme.AdminLte2.Index do
     page = opts[:page]
     order = opts[:order]
     scope = conn.params["scope"]
-    markup do
+    markup safe: true do
       div ".box-body.table-responsive.no-padding" do
         div ".paginated_collection" do
           table(".table-striped.index.table.index_table") do
@@ -81,7 +81,8 @@ defmodule ExAdmin.Theme.AdminLte2.Index do
             end)
           end
         end # .index_content
-      end <> do_footer(conn, opts)
+      end
+      do_footer(conn, opts)
     end
   end
 
