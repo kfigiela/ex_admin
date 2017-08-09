@@ -141,8 +141,8 @@ defmodule ExAdmin.CSV do
   def build_csv(schema, resources, opts) do
     schema = normalize_schema schema
     Enum.reduce(resources, build_header_row(schema, opts), &(build_row(&2, &1, schema)))
-    |> Enum.reverse
-    |> CSVLixir.write
+    |> Enum.reverse()
+    |> CSVLixir.write()
   end
   def build_csv(resources) do
     default_schema(resources)
@@ -185,6 +185,6 @@ defmodule ExAdmin.CSV do
   @doc false
   def write_csv(csv) do
     csv
-    |> CSVLixir.write
+    |> CSVLixir.write()
   end
 end

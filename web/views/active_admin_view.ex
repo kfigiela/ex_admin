@@ -38,7 +38,10 @@ defmodule ExAdmin.ActiveAdmin.LayoutView do
       _ -> nil
     end
     if icon do
-      [{"<i class='fa #{icon}'></i><span>#{name}</span>", opts} | tail]
+      content = i class: icon do
+        span do name end
+      end
+      [{content, opts} | tail]
     else
       opts_arg
     end
@@ -58,7 +61,9 @@ defmodule ExAdmin.ActiveAdmin.LayoutView do
           end
           span do
             text Utils.humanize(name) <> " "
-            span ".badge.badge-xs.bg-blue #{count}", style: "margin-top: -2px"
+            span ".badge.badge-xs.bg-blue", style: "margin-top: -2px" do
+              text count
+            end
           end
         end
       end

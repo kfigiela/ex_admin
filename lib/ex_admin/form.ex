@@ -235,7 +235,7 @@ defmodule ExAdmin.Form do
         var!(input_blocks, ExAdmin.Form) = []
         var!(script_block, ExAdmin.Form) = nil
         unquote(contents)
-        items = var!(input_blocks, ExAdmin.Form) |> Enum.reverse
+        items = var!(input_blocks, ExAdmin.Form) |> Enum.reverse()
         script_block = var!(script_block, ExAdmin.Form)
         Module.concat(var!(conn).assigns.theme, Form).build_form(
           var!(conn), var!(resource), items, var!(params), script_block, ExAdmin.Form.global_script)
@@ -249,7 +249,7 @@ defmodule ExAdmin.Form do
         var!(input_blocks, ExAdmin.Form) = []
         var!(script_block, ExAdmin.Form) = nil
         unquote(contents)
-        var!(input_blocks, ExAdmin.Form) |> Enum.reverse
+        var!(input_blocks, ExAdmin.Form) |> Enum.reverse()
       end
 
       def ajax_view(conn, params, resource, resources, block) do
@@ -411,7 +411,7 @@ defmodule ExAdmin.Form do
       var!(inputs, ExAdmin.Form) = []
       var!(items, ExAdmin.Form) = []
       unquote(block)
-      items = var!(items, ExAdmin.Form) |> Enum.reverse
+      items = var!(items, ExAdmin.Form) |> Enum.reverse()
       item = %{type: :actions, name: "", items: items}
       var!(inputs, ExAdmin.Form) = [item | var!(inputs, ExAdmin.Form)]
     end
@@ -640,7 +640,7 @@ defmodule ExAdmin.Form do
   @doc false
   def build_item(_conn, %{type: :script, contents: contents}, _resource, _model_name, _errors) do
     Adminlog.debug "build_item 2:"
-    script type: "javascript" do
+    script type: "text/javascript" do
       text "\n" <> contents <> "\n"
     end
   end
@@ -1133,7 +1133,7 @@ defmodule ExAdmin.Form do
   end
 
   def build_array_control_select2_script({collection, options}, name) do
-    script = Xain.script do
+    script = Xain.script type: "text/javascript" do
       """
       $(document).ready(function() {
         $(".#{name}").select2(#{options});
@@ -1406,8 +1406,10 @@ defmodule ExAdmin.Form do
   end
 
   def required_abbr(true) do
-    abbr ".required *", title: "required"
-  end
+    abbr ".required", title: "required" do
+      text "*"
+    end
+   end
   def required_abbr(_), do: ""
 
   def get_required(field_name, %{required: required}) do

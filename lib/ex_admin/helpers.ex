@@ -27,7 +27,7 @@ defmodule ExAdmin.Helpers do
       res when is_map(res) ->
         if ExAdmin.Utils.authorized_action? conn, :index, res.__struct__ do
           path = admin_resource_path res, :index
-          "<a href='#{path}'>#{contents}</a>"
+          Phoenix.HTML.Tag.content_tag :a, contents, href: path
         else
           contents
         end
@@ -65,8 +65,7 @@ defmodule ExAdmin.Helpers do
   defp build_content_link(link?, conn, resource, contents) do
     if link? && ExAdmin.Utils.authorized_action?(conn, :show, resource) do
       path = admin_resource_path resource, :show
-      # TODO: Phoenix.HTML.Tag.content_tag / Phoenix.HTML.Tag.link czy jakos tak
-      "<a href='#{path}'>#{contents}</a>"
+      Phoenix.HTML.Tag.content_tag :a, contents, href: path
     else
       contents
     end
@@ -142,11 +141,11 @@ defmodule ExAdmin.Helpers do
     attributes = opts
       |> Map.delete(:fun)
       |> Map.delete(:image)
-      |> build_attributes
+      |> Map.put(:src, fun.(resource))
+      |> Enum.into([])
 
-    "<img src='#{fun.(resource)}'#{attributes} />"
+    Phoenix.HTML.Tag.tag :img, attributes
     |> build_link_for(conn, opts, resource, f_name)
-    # TODO: Phoenix.HTML.Tag.tag
   end
   def build_single_field(resource, conn, f_name, %{toggle: true}) do
     build_single_field(resource, conn, f_name, %{toggle: ~w(YES NO)})
@@ -161,13 +160,16 @@ defmodule ExAdmin.Helpers do
       false -> ["btn-default", "btn-primary"]
       value -> raise ArgumentError.exception("`toggle` option could be used only with columns of boolean type.\nBut `#{f_name}` is #{inspect(IEx.Info.info(value))}\nwith value == #{inspect(value)}")
     end
-    [
-    ~s(<a id="#{f_name}_true_#{resource.id}" class="toggle btn btn-sm #{yes_btn_css}" href="#{path.(true)}" data-remote="true" data-method="put" #{if !!current_value, do: "disabled"}>#{yes}</a>),
-    ~s(<a id="#{f_name}_false_#{resource.id}" class="toggle btn btn-sm #{no_btn_css}" href="#{path.(false)}" data-remote="true" data-method="put" #{if !current_value, do: "disabled"}>#{no}</a>)
-    ] |> Enum.join
-    # TODO: Phoenix.HTML.Tag.content_tag / Phoenix.HTML.Tag.link czy jakos tak
-    # TODO: safe_join
+    markup do
+      a id: "#{f_name}_true_#{resource.id}", class: "toggle btn btn-sm #{yes_btn_css}", href: path.(true),  "data-remote": "true", "data-method": "put", disabled: !!current_value do
+        yes
+      end
+      a id: "#{f_name}_false_#{resource.id}", class: "toggle btn btn-sm #{no_btn_css}",  href: path.(false), "data-remote": "true", "data-method": "put", disabled:  !current_value do
+        no
+      end
+    end
   end
+
   def build_single_field(resource, conn, f_name, %{fun: fun} = opts) do
     markup :nested do
       case fun.(resource) do
@@ -202,17 +204,17 @@ defmodule ExAdmin.Helpers do
   end
   defp build_single_field_type(_, resource, conn, f_name, opts) do
     get_resource_field(resource, f_name, opts)
-    |> format_contents
+    |> format_contents()
     |> build_link_for(conn, opts, resource, f_name)
   end
 
   defp format_contents(contents) when is_list(contents) do
     contents
     |> Enum.map(&format_contents/1)
-    |> to_string
+    |> to_string()
   end
   defp format_contents(%{__struct__: _} = contents), do: to_string(contents)
-  defp format_contents(%{} = contents) do
+  defp format_contents(%{} = contents) do # TODO: do sprawdzenia jak to sie zachowuje!
     Enum.reduce(contents, [], fn {k,v}, acc ->
       value = ExAdmin.Render.to_string(v)
       ["#{k}: #{value}" | acc]
@@ -230,7 +232,7 @@ defmodule ExAdmin.Helpers do
         get_resource_model resource
 
       %{__struct__: name} ->
-        name |> base_name |>  Inflex.underscore
+        name |> base_name |>  Inflex.underscore()
       %{} -> :map
     end
   end
@@ -358,8 +360,8 @@ defmodule ExAdmin.Helpers do
     end
   end
 
-  def timestamp do
-    :os.timestamp |> Tuple.to_list |> Enum.join |>  String.to_integer
+  def timestamp do # TODO: numbers should be zero-padded before joining
+    :os.timestamp() |> Tuple.to_list() |> Enum.join() |>  String.to_integer()
   end
 
   def group_by(collection, fun) do
@@ -399,16 +401,6 @@ defmodule ExAdmin.Helpers do
     do: field_name_to_class(Inflex.parameterize(field_name, "_"))
   def to_class(field_name) when is_atom(field_name),
     do: field_name_to_class(Atom.to_string(field_name))
-
-  def build_attributes(%{} = opts) do
-    build_attributes Map.to_list(opts)
-  end
-  # TODO
-  def build_attributes(opts) do
-    Enum.reduce opts, "", fn({k,v}, acc) ->
-      acc <> " #{k}='#{v}'"
-    end
-  end
 
   def translate_field(defn, field) do
     case Regex.scan ~r/(.+)_id$/, Atom.to_string(field) do

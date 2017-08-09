@@ -42,7 +42,7 @@ defmodule ExAdmin.LayoutView do
     """
 
     Application.get_env(:ex_admin, :footer, default)
-    |> Phoenix.HTML.raw
+    |> Phoenix.HTML.raw()
   end
 
   def check_for_sidebars(conn, filters, defn) do

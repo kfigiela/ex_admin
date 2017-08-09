@@ -158,7 +158,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
         end
       end
       div ".box-body" do
-        html
+        html |> Phoenix.HTML.raw()
       end
     end
     {res, changes}

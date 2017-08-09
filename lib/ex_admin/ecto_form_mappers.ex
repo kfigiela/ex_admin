@@ -13,7 +13,7 @@ defmodule ExAdmin.EctoFormMappers do
           elem(x, 1) == "on"
       end,
       fn
-        {item, _} when is_atom(item) -> Atom.to_string item
+        {item, _} when is_atom(item) -> Atom.to_string(item)
         {item, _} -> item
       end
     )

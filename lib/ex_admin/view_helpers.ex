@@ -76,10 +76,7 @@ defmodule ExAdmin.ViewHelpers do
   def build_link(action, opts, html_opts \\ [])
   def build_link(_action, opts, _) when opts in [nil, []], do: ""
   def build_link(_action, [{name, opts} | _], html_opts) do
-    attrs = Enum.reduce(opts ++ html_opts, "", fn({k,v}, acc) ->
-      acc <> "#{k}='#{v}' "
-    end)
-    Phoenix.HTML.raw "<a #{attrs}>#{name}</a>"
+    Phoenix.HTML.Tag.content_tag :a, name, (opts ++ html_opts)
   end
 
   @js_escape_map Enum.into([{"^", ""}, { ~S(\\), ~S(\\\\)}, {~S(</), ~S(<\/)}, {"\r\n", ~S(\n)}, {"\n", ~S(\n)}, {"\r", ~S(\n)},

@@ -146,7 +146,7 @@ defmodule ExAdmin.Form.Fields do
     case Map.get item[:opts], :prompt, nil do
       nil ->
         nm = humanize("#{field_name}")
-        |> articlize
+        |> articlize()
         (gettext "Select %{nm}",nm: nm)
       other -> other
     end

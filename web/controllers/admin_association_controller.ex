@@ -18,7 +18,7 @@ defmodule ExAdmin.AdminAssociationController do
     resource
     |> repo().preload(association_name)
     |> changeset(association_name, positions)
-    |> repo().update!
+    |> repo().update!()
 
     conn |> put_status(200) |> json("Ok")
   end
@@ -50,7 +50,7 @@ defmodule ExAdmin.AdminAssociationController do
     |> Enum.each(fn(assoc_id) ->
       assoc_id = String.to_integer(assoc_id)
       Ecto.build_assoc(resource, through_assoc, %{resource_key => resource_id, assoc_key => assoc_id})
-      |> repo().insert!
+      |> repo().insert!()
     end)
 
     conn

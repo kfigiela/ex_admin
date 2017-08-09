@@ -4,8 +4,10 @@ defmodule ExAdmin.Theme.AdminLte2.Page do
 
   def columns(cols) do
     count = Kernel.div 12, Enum.count(cols)
-    for  html <- cols do
-      div html, class: "col-lg-#{count}"
+    for html <- cols do
+      div class: "col-lg-#{count}" do
+        html
+      end
     end
   end
 end
