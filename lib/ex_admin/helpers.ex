@@ -171,12 +171,8 @@ defmodule ExAdmin.Helpers do
   end
 
   def build_single_field(resource, conn, f_name, %{fun: fun} = opts) do
-    markup :nested do
-      case fun.(resource) do
-        [{_, list}] -> Phoenix.HTML.html_escape(list)
-        other -> Phoenix.HTML.html_escape(other)
-      end
-    end
+    fun.(resource)
+    |> Phoenix.HTML.html_escape()
     |> build_link_for(conn, opts, resource, f_name)
   end
 
