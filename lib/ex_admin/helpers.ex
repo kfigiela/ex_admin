@@ -214,7 +214,7 @@ defmodule ExAdmin.Helpers do
     |> to_string()
   end
   defp format_contents(%{__struct__: _} = contents), do: to_string(contents)
-  defp format_contents(%{} = contents) do # TODO: do sprawdzenia jak to sie zachowuje!
+  defp format_contents(%{} = contents) do
     Enum.reduce(contents, [], fn {k,v}, acc ->
       value = ExAdmin.Render.to_string(v)
       ["#{k}: #{value}" | acc]

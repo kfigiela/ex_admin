@@ -137,7 +137,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
   end
 
   def has_many_insert_item(html, new_record_name_var) do
-    ~s|$(this).siblings("div.input").append("#{html}".replace(/#{new_record_name_var}/g,| <>
+    ~s|$(this).siblings("div.input").append("#{html |> Phoenix.HTML.escape_javascript() |> Phoenix.HTML.safe_to_string()}".replace(/#{new_record_name_var}/g,| <>
       ~s|new Date().getTime())); return false;|
   end
 
@@ -154,7 +154,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
     res = div ".box.box-primary" do
       div ".box-header.with-border" do
         h3 ".box-title" do
-          text item[:name]
+          item[:name]
         end
       end
       div ".box-body" do

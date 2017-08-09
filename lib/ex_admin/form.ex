@@ -780,11 +780,11 @@ defmodule ExAdmin.Form do
 
   def build_item(_conn, %{type: :content, content: content}, _resource, _model_name, _errors) when is_binary(content) do
     Adminlog.debug "build_item 5."
-    text content
+    Phoenix.HTML.escape_html(content)
   end
   def build_item(_conn, %{type: :content, content: content}, _resource, _model_name, _errors) do
     Adminlog.debug "build_item 6."
-    text elem(content, 1)
+    content
   end
 
   def build_item(conn, %{type: :input, resource: _resource, name: field_name, opts: opts},
@@ -1463,10 +1463,11 @@ defmodule ExAdmin.Form do
   def error_messages(other) when is_binary(other), do: other
   def error_messages(other), do: "error: #{inspect other}"
 
+  # TODO: FIXME
   def global_script, do: """
     $(function() {
-      $(document).on('click', '.remove_has_many_maps', function() {
-        console.log('remove has many maps');
+      $(document).on("click", ".remove_has_many_maps", function() {
+        console.log("remove has many maps");
         $(this).closest(".has_many_fields").remove();
         return false;
       });
