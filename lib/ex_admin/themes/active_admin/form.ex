@@ -104,7 +104,7 @@ defmodule ExAdmin.Theme.ActiveAdmin.Form do
     fieldset(".actions") do
       ol do
         li(".action.input_action##{model_name}_submit_action") do
-          Xain.input name: "commit", type: :submit, value: escape_value("#{label} #{humanize display_name}")
+          Xain.input name: "commit", type: :submit, value: ("#{label} #{humanize display_name}")
         end
         li(".cancel") do
           a((gettext "Cancel"), href: admin_resource_path(conn, :index))
@@ -219,9 +219,9 @@ defmodule ExAdmin.Theme.ActiveAdmin.Form do
                 select "##{ext_name}_#{f_name}", [name: name ] do
                   for opt <- collection do
                     if not is_nil(res) and (Map.get(res, f_name) == opt) do
-                      option "#{opt}", [value: escape_value(opt), selected: :selected]
+                      option "#{opt}", [value: opt, selected: :selected]
                     else
-                      option "#{opt}", [value: escape_value(opt)]
+                      option "#{opt}", [value: opt]
                     end
                   end
                 end
@@ -233,7 +233,7 @@ defmodule ExAdmin.Theme.ActiveAdmin.Form do
                   text humanize(f_name)
                   required_abbr required
                 end
-                val = if res, do: [value: Map.get(res, f_name, "") |> escape_value], else: []
+                val = if res, do: [value: Map.get(res, f_name, "")], else: []
                 Xain.input([type: :text, maxlength: "255", id: "#{ext_name}_#{f_name}",
                   name: name, required: true] ++ val)
                 build_errors(errors, field[:opts][:hint])
@@ -288,7 +288,7 @@ defmodule ExAdmin.Theme.ActiveAdmin.Form do
           error = if errors
            do
              Enum.filter(errors, &(elem(&1, 0) == to_string(field)))
-             |> Enum.map(&(elem(&1, 1))) 
+             |> Enum.map(&(elem(&1, 1)))
            else
              nil
            end

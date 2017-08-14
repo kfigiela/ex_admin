@@ -98,7 +98,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
     display_name = ExAdmin.Utils.displayable_name_singular conn
     label = if mode == :new, do: (gettext "Create"), else: (gettext "Update")
     div ".box-footer" do
-      Xain.input ".btn.btn-primary", name: "commit", type: :submit, value: escape_value("#{label} #{humanize display_name}")
+      Xain.input ".btn.btn-primary", name: "commit", type: :submit, value: "#{label} #{humanize display_name}"
       a(".btn.btn-default.btn-cancel " <> (gettext "Cancel"), href: admin_resource_path(conn, :index))
     end
   end
@@ -226,9 +226,9 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
                     for opt <- collection do
                       cond do
                         not is_nil(res) and (Map.get(res, f_name) == opt) ->
-                          option "#{opt}", [value: escape_value(opt), selected: :selected]
+                          option "#{opt}", [value: opt, selected: :selected]
                         true ->
-                          option "#{opt}", [value: escape_value(opt)]
+                          option "#{opt}", [value: opt]
                       end
                     end
                   end
@@ -238,7 +238,7 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
             _ ->
               val = cond do
                 is_nil(res) -> []
-                true -> [value: Map.get(res, f_name, "") |> escape_value]
+                true -> [value: Map.get(res, f_name, "")]
               end
 
               div ".form-group", id: "#{ext_name}_#{f_name}_input"  do

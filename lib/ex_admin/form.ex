@@ -1021,7 +1021,7 @@ defmodule ExAdmin.Form do
   end
 
   def build_control(:text, resource, opts, model_name, field_name, ext_name) do
-    value = Map.get(resource, field_name, "") |> escape_value
+    value = Map.get(resource, field_name, "")
     options = opts
     |> Map.put(:class, "form-control")
     |> Map.put_new(:name, "#{model_name}[#{field_name}]")
@@ -1092,7 +1092,7 @@ defmodule ExAdmin.Form do
     |> Map.put_new(:maxlength, "255")
     |> Map.put_new(:name, "#{model_name}[#{field_name}]")
     |> Map.put_new(:id, ext_name)
-    |> Map.put_new(:value, value |> escape_value)
+    |> Map.put_new(:value, value)
     |> Map.delete(:display)
     |> Map.to_list
     |> Xain.input
@@ -1363,12 +1363,6 @@ defmodule ExAdmin.Form do
     |> String.replace(" ", "_")
     |> String.upcase
     "NEW_#{name}_RECORD"
-  end
-
-  def escape_value(nil), do: nil
-  def escape_value(value) when is_map(value), do: value
-  def escape_value(value) do
-    Phoenix.HTML.html_escape(value) |> elem(1)
   end
 
   @doc false
