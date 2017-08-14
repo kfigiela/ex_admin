@@ -1134,7 +1134,7 @@ defmodule ExAdmin.Form do
 
   def build_array_control_select2_script({collection, options}, name) do
     script = Xain.script type: "text/javascript" do
-      """
+      Phoenix.HTML.raw """
       $(document).ready(function() {
         $(".#{name}").select2(#{options});
       })
