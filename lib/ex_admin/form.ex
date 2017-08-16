@@ -629,7 +629,7 @@ defmodule ExAdmin.Form do
           {value, name} -> {value, name}
           other -> {other, other}
         end
-        selected = if Map.get(resource, field_name) == value,
+        selected = if to_string(Map.get(resource, field_name)) == to_string(value),
           do: [selected: :selected], else: []
         option(name, [value: value] ++ selected)
       end
@@ -1124,10 +1124,8 @@ defmodule ExAdmin.Form do
     {collection, "{}"}
   end
   def build_array_control_select2_script_opts({collection, list}) when is_list(list) do
-    args = Enum.reduce(list, [], fn {k,v}, acc ->
-      ["#{k}: #{v}"|acc]
-    end)
-    |> Enum.reverse
+    args = list
+    |> Enum.map(fn {k, v} -> "#{k}: #{v}" end)
     |> Enum.join(", ")
     {collection, "{#{args}}"}
   end
