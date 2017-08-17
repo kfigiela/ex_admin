@@ -4,7 +4,11 @@ defmodule ExAdmin.ParamsAssociations do
 
   def load_associations(params, model_name, model, delete_association \\ true) do
     case Map.has_key? params, model_name do
-      true -> Map.put(params, model_name, do_load_associations(params[model_name], model, delete_association))
+      true -> if is_map(params[model_name]) do
+        Map.put(params, model_name, do_load_associations(params[model_name], model, delete_association))
+      else
+        params
+      end
       false -> params
     end
   end
