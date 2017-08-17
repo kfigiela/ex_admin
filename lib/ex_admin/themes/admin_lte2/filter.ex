@@ -168,13 +168,7 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
 
     div ".form-group" do
       label ".label #{name_label}", for: "q_#{name}"
-      select "##{name}", [name: "q[#{name}_eq]", class: "form-control"] do
-        option "Any", value: ""
-        for id <- ids do
-          selected = if "#{id}" == selected_key, do: [selected: :selected], else: []
-          option id, [{:value, "#{id}"} | selected]
-        end
-      end
+      input id: "q_#{name}", name: "q[#{name}_eq]", type: "text", value: selected_key, class: "form-control"
     end
   end
 
