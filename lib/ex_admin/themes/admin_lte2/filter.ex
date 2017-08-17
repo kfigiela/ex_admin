@@ -61,7 +61,7 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
       end
   end
 
-  def build_field({name, type}, q, defn) when type in [Ecto.DateTime, Ecto.Date, Ecto.Time, Timex.Ecto.DateTime, Timex.Ecto.Date, Timex.Ecto.Time, Timex.Ecto.DateTimeWithTimezone, NaiveDateTime, :naive_datetime] do
+  def build_field({name, type}, q, defn) when type in [Ecto.DateTime, Ecto.Date, Ecto.Time, Timex.Ecto.DateTime, Timex.Ecto.Date, Timex.Ecto.Time, Timex.Ecto.DateTimeWithTimezone, NaiveDateTime, :naive_datetime, :utc_datetime] do
     gte_value = get_value("#{name}_gte", q)
     lte_value = get_value("#{name}_lte", q)
     name_label = field_label(name, defn)
@@ -172,8 +172,34 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
     end
   end
 
+
+  def build_field({name, type}, q, defn) when is_atom(type) do
+    if Code.ensure_loaded?(type) && {:__enum_map__, 0} in type.module_info(:functions) do # Support for EctoEnum
+      id = "q_#{name}_eq"
+      name_label = field_label(name, defn)
+      selected_key = case q["#{name}_eq"] do
+        nil -> nil
+        val -> val
+      end
+      
+      div ".form-group" do
+        label ".label #{name_label}", for: "q_#{name}_eq"
+        select "##{id}.form-control", [name: "q[#{name}_eq]"] do
+          option "Any", value: ""
+          for id <- type.__enum_map__ do
+            selected = if "#{id}" == "#{selected_key}", do: [selected: :selected], else: []
+            option [{:value, "#{id}"} | selected] do "#{id}" end
+          end
+        end
+      end      
+    else
+      IO.puts "ExAdmin.Filter: unknown type: #{inspect type} for field: #{inspect name}"
+      nil        
+    end    
+  end
+
   def build_field({name, type}, _q, _) do
-    Logger.debug "ExAdmin.Filter: unknown type: #{inspect type} for field: #{inspect name}"
+    IO.puts "ExAdmin.Filter: unknown type: #{inspect type} for field: #{inspect name}"
     nil
   end
 
