@@ -114,13 +114,13 @@ defmodule ExAdmin.AdminLte2.LayoutView do
   def flash(message, :notice) do
     div ".alert.alert-success.alert-dismissable" do
       Xain.button ".close x", "data-dismiss": :alert, "aria-hidden": true
-      text message
+      Phoenix.HTML.raw message
     end
   end
   def flash(message, :error) do
     div ".alert.alert-error.alert-dismissable" do
       Xain.button ".close x", "data-dismiss": :alert, "aria-hidden": true
-      text message
+      Phoenix.HTML.raw message
     end
   end
 end

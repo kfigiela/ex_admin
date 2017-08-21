@@ -29,7 +29,9 @@ defmodule ExAdmin.ViewHelpers do
       if messages != [] do
         div(".flashes") do
           Enum.map messages, fn({which, flash}) ->
-            div(".flash.flash_#{which} #{flash}")
+            div(".flash.flash_#{which}") do
+              Phoenix.HTML.raw(flash)
+            end
           end
         end
       end
