@@ -10,7 +10,10 @@ defmodule ExAdmin.ParamsToAtoms do
     list = for {key, value} <- params do
       do_params_to_atoms(key, value, schema)
     end
-    Enum.into list, Map.new
+
+    list
+    |> Enum.reject(fn {_k, v} -> v == "" end)
+    |> Enum.into Map.new
   end
 
   defp do_params_to_atoms(key, %Plug.Upload{} = value, _) do
