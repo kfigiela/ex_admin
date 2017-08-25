@@ -158,7 +158,7 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
   def build_field({name, Ecto.UUID}, q, defn) do
     name_label = field_label(name, defn)
     repo = Application.get_env :ex_admin, :repo
-    ids = repo.all(defn.resource_model)
+    _ids = repo.all(defn.resource_model)
     |> Enum.map(&(Map.get(&1, name)))
 
     selected_key = case q["#{name}_eq"] do
@@ -181,7 +181,7 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
         nil -> nil
         val -> val
       end
-      
+
       div ".form-group" do
         label ".label #{name_label}", for: "q_#{name}_eq"
         select "##{id}.form-control", [name: "q[#{name}_eq]"] do
@@ -191,11 +191,11 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
             option [{:value, "#{id}"} | selected] do "#{id}" end
           end
         end
-      end      
+      end
     else
       IO.puts "ExAdmin.Filter: unknown type: #{inspect type} for field: #{inspect name}"
-      nil        
-    end    
+      nil
+    end
   end
 
   def build_field({name, type}, _q, _) do

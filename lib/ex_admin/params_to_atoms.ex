@@ -13,7 +13,7 @@ defmodule ExAdmin.ParamsToAtoms do
 
     list
     |> Enum.reject(fn {_k, v} -> v == "" end)
-    |> Enum.into Map.new
+    |> Enum.into(Map.new)
   end
 
   defp do_params_to_atoms(key, %Plug.Upload{} = value, _) do
