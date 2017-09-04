@@ -645,17 +645,45 @@ defmodule ExAdmin.Form do
     end
   end
 
-  def build_item(conn, %{type: :input, field_type: :map, name: field_name, resource: _resource
-       } = item, resource, model_name, _error) do
+  def build_item(conn, %{type: :input, field_type: :map, name: field_name, resource: _resource, opts: %{schema: :json} = opts} = item, resource, model_name, errors) do
+    Adminlog.debug "build_item 7: #{inspect field_name}"
+    errors = get_errors(errors, field_name)
+    label = get_label(field_name, opts)
+    required = if field_name in (conn.assigns[:ea_required] || []), do: true, else: false
+    {html, _id} = wrap_item(resource, field_name, model_name, label, errors, opts, conn.params, required, fn(ext_name) ->
+      markup do
+        value = case Map.get(resource, field_name, %{}) do
+          map when is_map(map) -> case Poison.encode(map, pretty: true) do
+            {:ok, json} -> json
+            err -> inspect(err)
+          end
+          str when is_binary(str) -> str
+          _ -> nil
+        end
+        options = opts
+        |> Map.put(:class, "form-control")
+        |> Map.put_new(:name, "#{model_name}[#{field_name}]")
+        |> Map.put_new(:id, ext_name)
+        |> Map.put_new(:style, "font-family: monospace;")
+        |> Map.delete(:display)
+        |> Map.to_list
+        textarea(value, options)
+        build_errors(errors, opts[:hint])
+      end
+    end)
+    html
+  end
+  def build_item(conn, %{type: :input, field_type: :map, name: field_name, resource: _resource} = item, resource, model_name, _error) do
     Adminlog.debug "build_item 11: #{inspect field_name}"
 
     schema = get_schema(item, field_name)
     data = Map.get(resource, field_name, model_name) || %{}
 
-    for {field, type} <- schema do
-      build_input(conn, type, field, field_name, data, model_name)
+    markup do
+      for {field, type} <- schema do
+        build_input(conn, type, field, field_name, data, model_name)
+      end
     end
-    |> Enum.join("\n")
   end
 
   def build_item(conn, %{type: :input, field_type: {:array, :map}, name: field_name, resource: _resource} = item, resource, model_name, error) do

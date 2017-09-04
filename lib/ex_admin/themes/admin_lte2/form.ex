@@ -141,15 +141,12 @@ defmodule ExAdmin.Theme.AdminLte2.Form do
       ~s|new Date().getTime())); return false;|
   end
 
+  defp form_box_reduce_fn({:safe, bin}, {htmls, chgs}),            do: {[htmls, bin], chgs}
+  defp form_box_reduce_fn({{:safe, bin}, change}, {htmls, chgs}),  do: {[htmls, bin], [change | chgs]}
+  defp form_box_reduce_fn(item, {htmls, chgs}) when is_list(item), do: Enum.reduce(item, {htmls, chgs}, &form_box_reduce_fn/2)
+
   def form_box(item, _opts, fun) do
-    {html, changes} = Enum.reduce(fun.(), {"", []}, fn(item, {htmls, chgs}) ->
-      case item do
-        {:safe, bin} ->
-          {[htmls, bin], chgs}
-        {{:safe, bin}, change} ->
-          {[htmls, bin], [change | chgs]}
-      end
-    end)
+    {html, changes} = Enum.reduce(fun.(), {"", []}, &form_box_reduce_fn/2)
     changes = Enum.reverse changes
     res = div ".box.box-primary" do
       div ".box-header.with-border" do
